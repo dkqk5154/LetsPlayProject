@@ -22,6 +22,8 @@ Test_ID ()=>{
 
 **Tool** : Spring Tool Suite, GitHub, SourceTree, PuTTY, FileZilla, maven
 
+**ETC** : GoogleChart API,KakaoDevelopers,Restful, FreeDomain
+
 기준으로 완성되었습니다.
 
 
