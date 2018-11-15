@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.play.web.admin.AdminMapper">
+
+	<select id="getAgeCnt" resultType="hashmap">
+		SELECT  member_age AS memberAge
+				, COUNT(*) AS totCount
+		FROM(
+			SELECT CASE WHEN age between 20 AND 29 THEN '20'
+						WHEN age between 30 AND 39 THEN '30'
+						WHEN age between 40 AND 49 THEN '40'
+						WHEN age between 50 AND 59 THEN '50'
+					ELSE '60'
+					END
+			AS member_age
+			FROM member
+		)A
+		GROUP BY member_age;
+	</select>
+	
+	<select id="getPayType" resultType="hashmap">
+		SELECT DISTINCT pay_type AS payType
+						, COUNT(pay_type) AS payTypeCount
+		FROM reservation
+		GROUP BY pay_type;
+	</select>
+	
+	<select id="getQuarter" resultType="hashmap">
+		SELECT A.booked AS booked
+			   , COUNT(*) AS bookCount
+		FROM(
+			SELECT CASE WHEN pay_date BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%Y-%01-%01 00:00:00')) 
+                                      AND     (SELECT DATE_FORMAT(CURDATE(), '%Y-%03-%31 23:59:59')) THEN '1quarter'
+						WHEN pay_date BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%Y-%04-%01 00:00:00')) 
+                                      AND     (SELECT DATE_FORMAT(CURDATE(), '%Y-%06-%31 23:59:59')) THEN '2quarter'
+						WHEN pay_date BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%Y-%07-%01 00:00:00')) 
+                                      AND     (SELECT DATE_FORMAT(CURDATE(), '%Y-%09-%31 23:59:59')) THEN '3quarter'
+						WHEN pay_date BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%Y-%10-%01 00:00:00')) 
+                                      AND     (SELECT DATE_FORMAT(CURDATE(), '%Y-%12-%31 23:59:59')) THEN '4quarter'
+						END
+					AS booked
+			FROM reservation
+			) A
+		GROUP BY A.booked
+	</select>
+
+	<select id="getAccomCnt" resultType="hashmap">
+		SELECT accomType AS accomType
+			   , COUNT(*) AS accomCount
+		FROM(
+			SELECT CASE WHEN accom_type = 'HOTEL' THEN 'Hotel'
+						WHEN accom_type = 'MOTEL' THEN 'Motel'
+						END
+						As 'accomType'
+			FROM accommodation
+			) A
+		GROUP BY accomType
+	</select>
+
+	<select id="getGenderCnt" resultType="hashmap">
+		SELECT genderType AS genderType
+			   , COUNT(*) AS genderCount
+		FROM(
+			SELECT CASE WHEN gender = '남' THEN 'Male'
+						WHEN gender = '여' THEN 'Female'
+						END
+						AS 'genderType'
+			FROM member
+		) A
+		GROUP BY genderType
+	</select>
+	
+	<select id="getTopLocal" resultType="hashmap">
+		SELECT B.byAccom AS byAccom, B.accomCount AS accomCount, B.rank AS rank
+		FROM(
+		    SELECT byAccom, COUNT(*) AS accomCount, RANK() OVER (ORDER BY accomCount DESC) AS rank
+		    FROM(
+		        SELECT CASE WHEN accom_addr LIKE '강원%' THEN '강원'
+		                    WHEN accom_addr LIKE '경기%' THEN '경기'
+		                    WHEN accom_addr LIKE '경상남도%' THEN '경상남도'
+		                    WHEN accom_addr LIKE '경상북도%' THEN '경상북도'
+		                    WHEN accom_addr LIKE '광주%' THEN '광주'
+		                    WHEN accom_addr LIKE '대구%' THEN '대구'
+		                    WHEN accom_addr LIKE '대전%' THEN '대전'
+		                    WHEN accom_addr LIKE '부산%' THEN '부산'
+		                    WHEN accom_addr LIKE '서울%' THEN '서울'
+		                    WHEN accom_addr LIKE '세종%' THEN '세종'
+		                    WHEN accom_addr LIKE '울산%' THEN '울산'
+		                    WHEN accom_addr LIKE '인천%' THEN '인천'
+		                    WHEN accom_addr LIKE '전라남도%' THEN '전라남도'
+		                    WHEN accom_addr LIKE '전라북도%' THEN '전라북도'
+		                    WHEN accom_addr LIKE '제주%' THEN '제주'
+		                    WHEN accom_addr LIKE '충청남도%' THEN '충청남도'
+		                    WHEN accom_addr LIKE '충청북도%' THEN '충청북도'
+		                    END
+		                    AS 'byAccom' 
+		        FROM count_res
+		        )A
+		    GROUP BY byAccom
+		    ORDER BY accomCount DESC
+		    )B
+		WHERE B.rank <![CDATA[<]]> 6
+	</select>
+	
+	<select id="getTopSales" resultType="hashmap">
+		SELECT A.accom AS accom, A.accomName, A.sumPay AS sumPay, A.rank AS rank
+		FROM(
+		    SELECT accommodation.accom_seq AS accom, accommodation.accom_name AS accomName, SUM(reservation.pay_price) AS sumPay, RANK() OVER (ORDER BY sumPay DESC) AS rank
+		    FROM reservation
+		    JOIN room
+		    ON reservation.room_seq = room.room_seq
+		    JOIN accommodation
+		    ON room.accom_seq = accommodation.accom_seq
+		    GROUP BY accommodation.accom_seq
+		    ORDER BY sumPay DESC
+		    )A
+		WHERE A.rank <![CDATA[<]]> 6
+	</select>
+	
+	<select id="getTopMember" resultType="hashmap">
+		SELECT A.memberID, A.sumPay, A.rank
+		FROM(
+			SELECT member_id AS memberID, SUM(pay_price) AS sumPay, rank() over(ORDER BY sumPay DESC) AS rank
+			FROM count_res
+			GROUP BY memberID
+			ORDER BY sumPay DESC
+			)A
+		WHERE A.rank <![CDATA[<]]> 6
+	</select>
+	
+	<select id="getSumHotel" resultType="hashmap">
+		SELECT A.monthly AS monthly, A.accom_type AS accomType, SUM(A.pay_price) AS sales
+		FROM(
+			SELECT CASE WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 11 MONTH), '%Y-%m-%01 00:00:00'))
+			                                  	  AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 11 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 11 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 10 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 10 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 10 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 9 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 9 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 9 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 8 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 8 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 8 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 7 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 7 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 7 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(CURDATE(), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(CURDATE(), '%Y년%m월'))
+			                                  ELSE 'except'
+			                                  END
+			                                  AS monthly, accommodation.accom_type, reservation.pay_price
+			FROM accommodation
+			JOIN room
+			ON accommodation.accom_seq = room.accom_seq
+			JOIN reservation
+			ON room.room_seq = reservation.room_seq
+			)A
+		where A.ACCOM_TYPE = 'HOTEL'
+		GROUP BY A.monthly
+	</select>
+	
+	<select id="getSumMotel" resultType="hashmap">
+		SELECT A.monthly AS monthly, A.accom_type AS accomType, SUM(A.pay_price) AS sales
+		FROM(
+			SELECT CASE WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 11 MONTH), '%Y-%m-%01 00:00:00'))
+			                                  	  AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 11 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 11 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 10 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 10 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 10 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 9 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 9 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 9 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 8 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 8 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 8 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 7 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 7 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 7 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 4 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 3 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 2 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y년%m월'))
+			            WHEN reservation.PAY_DATE BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%Y-%m-%01 00:00:00'))
+			                                      AND
+			                                              (SELECT DATE_FORMAT(CURDATE(), '%Y-%m-%31 23:59:59'))
+			                                      THEN    (SELECT DATE_FORMAT(CURDATE(), '%Y년%m월'))
+			                                  ELSE 'except'
+			                                  END
+			                                  AS monthly, accommodation.accom_type, reservation.pay_price
+			FROM accommodation
+			JOIN room
+			ON accommodation.accom_seq = room.accom_seq
+			JOIN reservation
+			ON room.room_seq = reservation.room_seq
+			)A
+		where A.ACCOM_TYPE = 'MOTEL'
+		GROUP BY A.monthly
+	</select>
+	
+	<select id="getByPriceAll" resultType="hashmap">
+		SELECT CONCAT(B.byPrice, '만원대') AS byPrice,
+		       SUM(B.reserCount) AS reserCount,
+		       B.roomSeq AS roomSeq
+		FROM (SELECT CASE
+		                WHEN A.room_price BETWEEN 30000 AND 39000 THEN 3
+		                WHEN A.room_price BETWEEN 40000 AND 49000 THEN 4
+		                WHEN A.room_price BETWEEN 50000 AND 59000 THEN 5
+		                WHEN A.room_price BETWEEN 60000 AND 69000 THEN 6
+		                WHEN A.room_price BETWEEN 70000 AND 79000 THEN 7
+		                WHEN A.room_price BETWEEN 80000 AND 89000 THEN 8
+		                WHEN A.room_price BETWEEN 90000 AND 99000 THEN 9
+		                WHEN A.room_price BETWEEN 100000 AND 109000 THEN 10
+		                WHEN A.room_price BETWEEN 110000 AND 119000 THEN 11
+		                WHEN A.room_price BETWEEN 120000 AND 129000 THEN 12
+		                WHEN A.room_price BETWEEN 130000 AND 139000 THEN 13
+		                WHEN A.room_price BETWEEN 140000 AND 149000 THEN 14
+		                WHEN A.room_price BETWEEN 150000 AND 159000 THEN 15
+		                WHEN A.room_price BETWEEN 160000 AND 169000 THEN 16
+		                WHEN A.room_price BETWEEN 170000 AND 179000 THEN 17
+		                ELSE 18
+		             END
+		                AS byPrice,
+		             COUNT(reservation.pay_no)
+		                AS reserCount,
+		             A.room_seq
+		                AS roomSeq
+		      FROM reservation
+		           JOIN
+		           (SELECT room.room_seq, room.room_price
+		            FROM room
+		            WHERE room.accom_seq IN
+		                     (SELECT accommodation.accom_seq
+		                      FROM accommodation
+		                      WHERE accommodation.accom_addr LIKE #{accom_addr})) A
+		            ON reservation.room_seq = A.room_seq
+		      WHERE reservation.pay_date BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%2016-%01-%01 %오전 %00:00:00'))
+		                                     AND (SELECT DATE_FORMAT(CURDATE(), '%Y-%m-%d %오후 %23:59:59'))
+		      GROUP BY A.room_price) B
+		GROUP BY B.byPrice
+	</select>
+	
+	<select id="getByPricePart" resultType="hashmap">
+		SELECT CONCAT(B.byPrice, '만원대') AS byPrice,
+		       SUM(B.reserCount) AS reserCount,
+		       B.roomSeq AS roomSeq
+		FROM (SELECT CASE
+		                WHEN A.room_price BETWEEN 30000 AND 39000 THEN 3
+		                WHEN A.room_price BETWEEN 40000 AND 49000 THEN 4
+		                WHEN A.room_price BETWEEN 50000 AND 59000 THEN 5
+		                WHEN A.room_price BETWEEN 60000 AND 69000 THEN 6
+		                WHEN A.room_price BETWEEN 70000 AND 79000 THEN 7
+		                WHEN A.room_price BETWEEN 80000 AND 89000 THEN 8
+		                WHEN A.room_price BETWEEN 90000 AND 99000 THEN 9
+		                WHEN A.room_price BETWEEN 100000 AND 109000 THEN 10
+		                WHEN A.room_price BETWEEN 110000 AND 119000 THEN 11
+		                WHEN A.room_price BETWEEN 120000 AND 129000 THEN 12
+		                WHEN A.room_price BETWEEN 130000 AND 139000 THEN 13
+		                WHEN A.room_price BETWEEN 140000 AND 149000 THEN 14
+		                WHEN A.room_price BETWEEN 150000 AND 159000 THEN 15
+		                WHEN A.room_price BETWEEN 160000 AND 169000 THEN 16
+		                WHEN A.room_price BETWEEN 170000 AND 179000 THEN 17
+		                ELSE 18
+		             END
+		                AS byPrice,
+		             COUNT(reservation.pay_no)
+		                AS reserCount,
+		             A.room_seq
+		                AS roomSeq
+		      FROM reservation
+		           JOIN
+		           (SELECT room.room_seq, room.room_price
+		            FROM room
+		            WHERE room.accom_seq IN
+		                     (SELECT accommodation.accom_seq
+		                      FROM accommodation
+		                      WHERE accommodation.accom_addr LIKE #{accom_addr})) A
+		              ON reservation.room_seq = A.room_seq
+		      WHERE reservation.pay_date BETWEEN #{start}
+		                                     AND #{end}
+		      GROUP BY A.room_price) B
+		GROUP BY B.byPrice
+	</select>
+	
+	<select id="getLocalHo" resultType="hashmap">
+		SELECT sum(reservation.pay_price) hoSales
+		FROM reservation
+		WHERE reservation.room_seq
+		IN (
+		    SELECT room.room_seq
+		    FROM room
+		    WHERE room.accom_seq
+		    IN (
+		        SELECT accom_seq
+		        FROM accommodation
+		        WHERE accom_addr LIKE #{accom_addr} AND accom_type ='HOTEL'))
+		AND reservation.pay_date 
+		BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%2016-%01-%01 %오전 %00:00:00'))
+		AND (SELECT DATE_FORMAT(CURDATE(), '%Y-%m-%d %오후 %23:59:59'))
+	</select>
+	
+	<select id="getLocalMo" resultType="hashmap">
+		SELECT sum(reservation.pay_price) hoSales
+		FROM reservation
+		WHERE reservation.room_seq
+		IN (
+		    SELECT room.room_seq
+		    FROM room
+		    WHERE room.accom_seq
+		    IN (
+		        SELECT accom_seq
+		        FROM accommodation
+		        WHERE accom_addr LIKE #{accom_addr} AND accom_type ='MOTEL'))
+		AND reservation.pay_date 
+		BETWEEN (SELECT DATE_FORMAT(CURDATE(), '%2016-%01-%01 %오전 %00:00:00'))
+		AND (SELECT DATE_FORMAT(CURDATE(), '%Y-%m-%d %오후 %23:59:59'))
+	</select>
+	
+	<select id="getLocalHoPart" resultType="hashmap">
+		SELECT sum(reservation.pay_price) hoSales
+		FROM reservation
+		WHERE reservation.room_seq
+		IN (
+		    SELECT room.room_seq
+		    FROM room
+		    WHERE room.accom_seq
+		    IN (
+		        SELECT accom_seq
+		        FROM accommodation
+		        WHERE accom_addr LIKE #{accom_addr} AND accom_type ='HOTEL'))
+		AND reservation.pay_date 
+		BETWEEN #{start}
+		AND #{end}
+	</select>
+	
+	<select id="getLocalMoPart" resultType="hashmap">
+		SELECT sum(reservation.pay_price) hoSales
+		FROM reservation
+		WHERE reservation.room_seq
+		IN (
+		    SELECT room.room_seq
+		    FROM room
+		    WHERE room.accom_seq
+		    IN (
+		        SELECT accom_seq
+		        FROM accommodation
+		        WHERE accom_addr LIKE #{accom_addr} AND accom_type ='MOTEL'))
+		AND reservation.pay_date 
+		BETWEEN #{start}
+		AND #{end}
+	</select>
+	
+	<select id="getPosition" resultType="hashmap">
+		SELECT accom_name AS accomName, longitude, latitude
+		FROM accommodation
+		WHERE accom_addr LIKE #{accom_addr}
+	</select>
+
+	<select id="getCustoAccom" resultType="hashmap">
+		SELECT CASE WHEN age BETWEEN 20 AND 29 THEN '20AGE'
+		            WHEN age BETWEEN 30 AND 39 THEN '30AGE'
+		            WHEN age BETWEEN 40 AND 49 THEN '40AGE'
+		            WHEN age BETWEEN 50 AND 59 THEN '50AGE'
+		            ELSE '60OVER'
+		            END
+		            AS byAge, COUNT(pay_no) AS payCount
+		FROM reservation
+		JOIN member
+		ON reservation.member_id = member.member_id
+		WHERE pay_date
+		BETWEEN #{start}
+		AND #{end}
+		AND room_seq
+		IN(
+		  SELECT room.room_seq
+		  FROM room
+		  WHERE room.accom_seq
+		  IN(
+		    SELECT accom_seq
+		    FROM accommodation
+		    WHERE accom_type = #{type}
+		    )
+		  )
+		GROUP BY byAge
+	</select>
+	
+	<select id="getCustoPop" resultType="hashmap">
+		SELECT B.byAddr AS byAddr, D.payCnt AS payCnt , ROUND(B.population / (SELECT COUNT(member_id) FROM member) * 100) AS popRate, B.population
+		FROM(
+		    SELECT A.byAddr AS byAddr, COUNT(A.MEMBER_ID) AS population, member_id
+		    FROM(
+		        SELECT CASE WHEN member.address LIKE '서울%' THEN '서울'
+		                    WHEN member.address LIKE '강원%' THEN '강원'
+		                    WHEN member.address LIKE '경기%' THEN '경기'
+		                    WHEN member.address LIKE '경상남도%' THEN '경상남도'
+		                    WHEN member.address LIKE '경상북도%' THEN '경상북도'
+		                    WHEN member.address LIKE '광주%' THEN '광주'
+		                    WHEN member.address LIKE '대구%' THEN '대구'
+		                    WHEN member.address LIKE '대전%' THEN '대전'
+		                    WHEN member.address LIKE '부산%' THEN '부산'
+		                    WHEN member.address LIKE '세종%' THEN '세종'
+		                    WHEN member.address LIKE '울산%' THEN '울산'
+		                    WHEN member.address LIKE '인천%' THEN '인천'
+		                    WHEN member.address LIKE '전라남도%' THEN '전라남도'
+		                    WHEN member.address LIKE '전라북도%' THEN '전라북도'
+		                    WHEN member.address LIKE '제주%' THEN '제주'
+		                    WHEN member.address LIKE '충청남도%' THEN '충청남도'
+		                    WHEN member.address LIKE '충청북도%' THEN '충청북도'
+		                    ELSE '비공개'
+		                    END
+		                    AS byAddr, member.member_id
+		        FROM member
+		        )A
+		    GROUP BY A.byAddr
+		    )B
+		JOIN(
+		    SELECT C.byAddr, COUNT(C.pay_no) payCnt, C.member_id
+		    FROM(
+		    SELECT CASE WHEN member.address LIKE '서울%' THEN '서울'
+		                WHEN member.address LIKE '강원%' THEN '강원'
+		                WHEN member.address LIKE '경기%' THEN '경기'
+		                WHEN member.address LIKE '경상남도%' THEN '경상남도'
+		                WHEN member.address LIKE '경상북도%' THEN '경상북도'
+		                WHEN member.address LIKE '광주%' THEN '광주'
+		                WHEN member.address LIKE '대구%' THEN '대구'
+		                WHEN member.address LIKE '대전%' THEN '대전'
+		                WHEN member.address LIKE '부산%' THEN '부산'
+		                WHEN member.address LIKE '세종%' THEN '세종'
+		                WHEN member.address LIKE '울산%' THEN '울산'
+		                WHEN member.address LIKE '인천%' THEN '인천'
+		                WHEN member.address LIKE '전라남도%' THEN '전라남도'
+		                WHEN member.address LIKE '전라북도%' THEN '전라북도'
+		                WHEN member.address LIKE '제주%' THEN '제주'
+		                WHEN member.address LIKE '충청남도%' THEN '충청남도'
+		                WHEN member.address LIKE '충청북도%' THEN '충청북도'
+		                ELSE '비공개'
+		                END
+		                AS byAddr, member.member_id, reservation.pay_no
+		    FROM member
+		    JOIN reservation
+		    ON member.member_id = reservation.member_id
+		    )C
+		    GROUP BY C.byAddr
+		    )D
+		ON B.member_id = D.member_id
+	</select>
+	
+	<select id="getTopRes" resultType="hashmap">
+		SELECT C.accom_name AS accomName, SUM(C.room_price) AS sales
+		FROM(
+		    SELECT B.accom_name, B.room_price, reservation.pay_no
+		    FROM(
+		        SELECT A.accom_seq, A.accom_name, room.room_seq, room.room_price
+		        FROM(
+		            SELECT accom_seq, accom_name
+		            FROM accommodation
+		            )A
+		        JOIN room
+		        ON A.accom_seq = room.room_seq
+		        )B
+		    JOIN reservation
+		    ON B.room_seq = reservation.room_seq
+		    )C
+		JOIN payment
+		ON C.pay_no = payment.pay_no
+		GROUP BY C.accom_name
+		ORDER BY sales DESC
+	</select>
+	
+	<select id="getTop" resultType="hashmap">
+		SELECT C.accom_seq AS accomSeq, C.accom_name AS accomName, C.accom_addr AS accomAddr, C.accom_type AS accomType, C.accom_photo1 AS accomPhoto1, C.accom_introduce AS accomIntroduce, C.longitude AS longitude, C.latitude AS latitude, C.room_price AS roomPrice, D.pay_no AS payNo, D.member_id AS memberId, D.pay_price AS payPrice, sum(D.pay_price) sumPay
+		FROM(
+		    SELECT A.accom_seq, A.accom_name, A.accom_addr, A.accom_type, A.accom_photo1, A.accom_introduce, A.longitude, A.latitude, B.room_seq, B.room_price
+		    FROM(
+		        SELECT accom_seq, accom_name, accom_addr, accom_type, accom_photo1, accom_introduce, longitude, latitude
+		        FROM accommodation
+		        )A
+		    JOIN room B
+		    ON A.accom_seq = B.accom_seq
+		    ) C
+		JOIN reservation D
+		ON C.room_seq = D.room_seq
+		GROUP BY C.accom_seq
+		ORDER BY sumPay desc
+	</select>
+
+</mapper>

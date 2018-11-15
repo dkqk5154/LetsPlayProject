@@ -1,0 +1,1026 @@
+@charset "UTF-8";
+
+
+li {
+	list-style: none;
+}
+
+em{
+	font-style: normal;
+}
+
+.box__dragndrop,
+.box__uploading,
+.box__success,
+.box__error {
+  display: none;
+}
+
+.box.has-advanced-upload {
+  background-color: white;
+  outline: 2px dashed black;
+  outline-offset: -10px;
+}
+.box.has-advanced-upload .box__dragndrop {
+  display: inline;
+}
+
+.heetae_hide_ico{
+	width: 130px;
+	height:37px;
+	opacity: 0;
+}
+
+.heetae_nav{
+	height: 63px;
+}
+ 
+.heetae_cusor{
+	font-size: 14px;
+	color: #666;
+	margin-left: 17px;
+}
+
+.heetae_cusor:hover{
+	text-decoration: none;
+	color: #ED006D;
+}
+
+.heetae_logo{
+	font-size: 25px;
+	color: #ED006D;
+}
+
+.heetae_logo:hover{
+	font-size: 25px;
+	color: #ED006D;
+	text-decoration: none;
+}
+
+.heetae_header_controller{
+	width : 100%;
+	height: 520px;
+	position: relative;
+}
+
+.heetae_header_controller img{
+	width : 100%;
+	height: 520px;
+	position: relative;
+} 
+
+.heetae_previco{
+	width: 40px;
+    height: 60px;
+    display: inline-block;
+    background: transparent no-repeat center center;
+    background-size: 100% 100%;
+    background: url(https://yaimg.yanolja.com/joy/pw/common/icon-comm.svg) no-repeat;
+	background-position: -200px -100px;
+}
+
+.heetae_previco:hover{
+	background-position: -200px -160px;
+}
+
+
+.heetae_nextico{
+	width: 40px;
+    height: 60px;
+    background: url(https://yaimg.yanolja.com/joy/pw/common/icon-comm.svg) no-repeat;
+	background-position: -240px -100px;
+	
+}
+
+.heetae_nextico:hover{
+	background-position: -240px -160px;
+}
+
+
+.heetae_current{
+	width: 1180px;
+	height: 60px;
+	position: absolute;
+    bottom: 0;
+    left: 50%; 
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.heetae_current p {
+	color: #fff;
+	font-style: normal;
+	font-size: 17px;
+}
+
+.heetae_check_box{
+	width: 380px;
+    height: 180.86px;
+    right: 0;
+    bottom: 0;
+    padding:30px 0;
+    display:block;
+	background-color: #595f63;
+}
+
+.heetae_check_map{
+	display: block;
+	width: 380px;
+	height: 500px;
+	background-color: blue;
+}
+
+.heetae_check_box .heetae_check_top ,
+.heetae_check_middle , .heetae_check_bottom{
+	padding: 0 20px;
+}
+
+.heetae_check_top{
+	height: 20px;
+}
+
+.heetae_check_top p{
+	position: relative;
+	font-size: 18px;
+    color: #fff;
+    margin: 0 5px;
+}
+
+.heetae_check_top_con1{
+	float: left;
+}
+
+.heetae_check_top_con2{
+	float: right;
+}
+
+.heetae_check_middle{
+	box-sizing: border-box;
+    margin: 10px 0 20px;
+    padding: 0 20px;
+    width: 100%;
+    height: 35px;
+}
+
+.heetae_check_middle div{
+	float:left;
+	height: 35px;
+}
+
+.heetae_check_middle_con1{
+	width: 130px;
+}
+
+.heetae_check_middle_con2{
+	margin: 10px 23px;
+    width: 34px;
+    height: 26px;
+    background: url(https://yaimg.yanolja.com/joy/pw/search/icon-staylist.svg) no-repeat;
+	background-position: -108px -40px;
+}
+
+.heetae_check_middle_con3{
+	width: 130px;
+}
+
+.heetae_check_middle div input{
+	cursor: pointer;
+	width : 130px;
+	font-size : 25px;
+	border-bottom:1px solid #ffffff;
+    padding-bottom:3px;
+    background-color:#595f63;
+	color: #ff6f6f;
+	border-top: 0px;
+	border-left: 0px;
+    border-right: 0px;
+}
+
+.heetae_check_bottom{
+	height: 35px;
+	padding: 10px;
+	margin-top: -8px;
+}
+
+.heetae_check_bottom span{
+	display: inline-block;
+	height : 15px;
+	line-height: 13px;
+}
+
+.heetae_check_bottom_con1{
+	font-size : 14px;
+	float : left;
+	padding: 0 20px;
+	color:#ffffff;
+	margin-left : 6px;
+    margin-top: 8px;
+    padding-left: 20px;
+    background: url(https://yaimg.yanolja.com/joy/pw/place/bullet-tip-list.svg) no-repeat 0 0;
+}
+
+.heetae_check_bottom_con2{
+	float: right;
+    width: 64.64px;
+    margin: -17px 8px;
+    font-size: 21px;
+    color: #ff777a;
+    text-align: right;
+}
+
+.heetae_section1{
+	width: 60%;
+}
+
+.heetae_section2{
+	width: 35%;
+	height: 80%;
+	margin-left: 120px;
+    margin-top: -219px;
+    position: absolute;
+}
+
+.heetae_section3{
+	width: 780px;
+}
+
+.heetae_content_controller{
+	position: relative;
+	width: 100%;
+}
+
+.heetae_content_form{
+	position: relative;
+	width: 1180px;
+    margin: 0 auto;
+	padding-top: 38px;
+	padding-left: 30px;
+	padding-right: 30px;
+	padding: 38px 30px 60px 30px
+}
+
+.heetae_section_form{
+	display: block;
+}
+
+.heetae_section_form section{
+	display: inline-block;
+}
+
+.heetae_content_info{
+	display: block;
+	height: 220px;
+}
+
+
+.heetae_info_title{
+	font-size: 42px;
+	display: block;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: 200;
+    letter-spacing: -1px;
+}
+
+.heetae_info_address{
+	font-size: 14px;
+	display: block;
+    color: #333;
+    margin-bottom: -5px;
+}
+
+.heetae_info_phone{
+	font-size: 14px;
+	display: block;
+    color: #333;
+}
+
+.heetae_info_score{
+	margin-top: 20px;
+	height: 19px;
+}
+
+.heetae_score_detail{
+	
+}
+
+.heetae_score_info i{
+	display : inline-block;
+	width: 16px;
+    height: 16px;
+}
+
+.heetae_score_0{
+	background: url(https://yaimg.yanolja.com/joy/pw/search/icon-staylist.svg) -38px 0;
+}
+
+.heetae_score_5{
+	background: url(https://yaimg.yanolja.com/joy/pw/search/icon-staylist.svg) -18px 0;
+}
+
+.heetae_score_10{
+	background: url(https://yaimg.yanolja.com/joy/pw/search/icon-staylist.svg) no-repeat;
+}
+
+.heetae_score_em{
+	display : inline-block;
+	margin-top:-10px;
+	margin-left: 5px;
+	font-size: 14px;
+	vertical-align: middle
+}
+
+.heetae_info_tag{
+	margin-top: 15px;
+}
+
+.heetae_tag_primary{
+	margin-right: 5px;
+    margin-bottom: 5px;
+    background-color: #FF2D60;
+    color: white;
+    font-style: normal;
+    font-size: 13px;
+    display: inline-block;
+    padding: 4px 8px;
+}
+
+.heetae_info_tip{
+	height: 16px;
+	margin-top: 15px;
+	list-style: none;
+	padding-left: 0px;
+    outline: none;
+}
+
+.heetae_info_tip li{
+	font-size: 14px;
+	height : 15px;
+	line-height: 12px;
+    color: #333;
+    padding-left: 20px;
+    background: url(https://yaimg.yanolja.com/joy/pw/place/bullet-tip-list.svg) no-repeat 0 0;
+}
+
+.heetae_content_theme_controller{
+	display: block;
+}
+
+.heetae_content_theme{
+	width:800px;
+	height:104px;
+	padding-left:0px;
+	margin-top: 55px;
+	margin-left: -20px;
+	display: block;
+}
+
+.heetae_content_theme li{
+    width: 60px;
+    min-height: 84px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    float: left;
+	display: inline-block;
+}
+
+.heetae_content_theme img{
+    width: 60px;
+}
+
+
+.heetae_content_theme span{
+	font-size: 13px;
+    display: block;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.heetae_tab_head{
+	width: 100%;
+	height: 54px;
+    margin-left: -1px;
+    text-align: center;
+}
+
+.heetae_tab_head button{
+	border: 1px solid #ddd;
+	color: #666666;
+    font-size: 16px;
+	width: 50%;
+	height: 100%;
+	margin-right: -1px;
+	padding: 0px;
+}
+
+.heetae_tab_button{
+    box-sizing: border-box;
+    background-color: #fafafa;
+}
+
+.heetae_tab_head .heetae_tab_button_active{
+	background-color: #fff;
+    border-bottom: 1px solid #fff;
+    opacity: 1;
+}
+
+.heetae_tab_content{
+}
+
+.heetae_tab_review_write{
+	display: block;
+}
+.heetae_write_button{
+	width: 80px;
+    height: 30px;
+    font-size: 12px;
+    vertical-align: middle;
+    border: 1px solid #343a403d;
+    color: #666666;
+    margin-left: 680px;
+    margin-top: 10px;
+}
+.heetae_card{
+	width:100%;
+	margin: 10px auto 0px;
+	resize: none;
+	overflow:hidden;
+}
+
+.heetae_textarea_support{
+	height: 50px;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    margin-bottom: 0px;
+    margin-top: -3px;
+}
+
+.heetae_textarea_counter{
+	display: inline-block;
+	font-size: 13px;
+    margin-left: 15px;
+    top: 10px;
+    vertical-align: middle;
+    color: gray;
+    position: relative;
+}
+
+.heetae_textarea_submit{
+	width: 80px;
+    height: 100%;
+    font-size: 12px;
+    vertical-align: middle;
+    border-left: 1px solid #343a403d;
+    color: #666666;
+    float: right;
+}
+
+.heetae_write_check{
+	display: inline-block;
+    margin-left: 70px;
+    margin-top: 17px;
+    position: absolute;
+    font-size: 13px;
+}
+.heetae_write_check label{
+	display: inline-block;
+    bottom: 2px;
+    left: 8px;
+    position: relative;
+    color: #ff2d60;
+}
+
+.heetae_textarea_support_ratingcontroller{
+	float: right;
+	height: 100%;
+	margin-right: 50px;
+}
+.heetae_support_header{
+	display: inline-block;
+    float: left;
+    height: 38px;
+    width: 100%;
+    border-color: #dfdfdf;
+    border-left: 1px solid #dfdfdf;
+    border-top: 1px solid #dfdfdf;
+    border-right: 1px solid #dfdfdf;
+    margin-top: 10px;
+}
+
+.heetae_support_header div{
+	display: inline-block;
+    margin-left: 5px;
+}
+
+.heetae_review_input_title{
+	width: 400px;
+    font-size: 15px;
+    border: 0px solid #dfdfdf;
+    margin: 5px;
+}
+
+.heetae_fileupload_inputbox_input{
+    left: 545px;
+    margin-top: 22px;
+    position: relative;
+}
+
+.heetae_textarea_support_rating{
+    width: 100px;
+    display: inline-block;
+    left: 11px;
+    top: 5px;
+    position: relative;
+}
+
+.heetae_textarea_support_rating_button{
+	width: 80px;
+    height: 100%;
+    font-size: 15px;
+    color: #666666;
+    vertical-align: middle;
+    border-right: 1px solid #ced0d1;
+    border-left: 1px solid #ced0d1;
+}
+
+.heetae_review_select_box{
+    position: relative;
+    top: 22px;
+    font-size: 12px;
+    float: right;
+}
+
+
+.heetae_tab_content_room{
+	box-sizing: border-box;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 30px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.heetae_tab_room_item{
+	display: inline-block;
+	width: 460px;
+	height: 306px;
+}
+
+
+.heetae_tab_slider{
+	width: 460px;
+	float: left;
+}
+
+.heetae_tab_inner div img{
+	width: 460px;
+	height: 306px;
+}
+
+.heetae_tab_room_info{
+	width: 320px;
+	height: 306px;
+	padding-left: 30px;
+	display: inline-block;
+}
+
+.heetae_tab_info_title{
+	width: 100%;
+}
+
+.heetae_tab_info_title em{
+	font-size: 28px;
+    color: #333;
+}
+
+.heetae_tab_info_tip{
+	font-size: 14px;
+    margin-top: 10px;
+    display: block;
+    color: #666666;
+}
+
+.heetae_tab_info_price{
+	width: 100%;
+	height: 70px;
+	box-sizing: border-box;
+	margin-top: 115px;
+    padding: 20px 10px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.heetae_tab_info_price span i{
+	vertical-align: unset;
+	color: #333;
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 20px;
+    margin-top: 7px;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.heetae_tab_info_price span small{
+	font-size: 16px;
+	display: inline-block;
+	color: #666666;
+}
+
+.heetae_tab_info_price span em{
+	color: #ff2d60;
+	font-size: 28px;
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: -1px;
+    vertical-align: middle;
+    margin-bottom: 10px;
+}
+
+.heetae_info_price_right{
+	float: right;
+}
+
+.heetae_info_price_right i{
+	margin-bottom: 5px;
+}
+
+.heetae_info_price_left{
+	float: left;
+}
+
+.heetae_tab_info_reserve_btn{
+	background: -webkit-gradient(linear,left top,right bottom,color-stop(0,#ff4143),color-stop(100%,#ff1764));
+    width: 100%;
+    height: 48px;
+    display:block;
+    padding: 16px 0 6px;
+    text-align: center;
+    color: #fff;  
+    line-height:1;
+    cursor: pointer;
+}
+
+.heetae_tab_info_reserve_not_btn{
+	background: -webkit-gradient(linear,left top,right bottom,color-stop(0,#333333),color-stop(100%,#787878));
+    width: 100%;
+    height: 48px;
+    display: block;
+    padding: 16px 0 6px;
+    text-align: center;
+    color: #fff;
+    line-height: 1;
+    cursor: default;
+}
+
+.heetae_tab_info_reserve_not_btn:hover{
+	text-decoration: none;
+	color: #fff; 
+}
+
+.heetae_tab_info_reserve_btn:hover{
+	text-decoration: none;
+	color: #fff;  
+}
+
+.heetae_select_paytype_box{
+	margin-bottom: 12px;
+}
+
+.heetae_paybox .heetae_paybox_con1,.heetae_paybox_con2{
+	display: block;
+	height: 50px;
+	font-size: 17px;
+}
+
+.heetae_paybox_con3{
+	display: block;
+	height: 50px;
+}
+
+.heetae_paybox_con3-1{
+	float: right;
+    font-size: 20px;
+    margin-right: 5px;
+    font-weight: 1000;
+}
+
+.heetae_paybox_con3-2{
+	float: right;
+    font-size: 30px;
+    font-weight: 1000;
+    color: #dc3545;
+    margin-bottom: 0px;
+    position: relative;
+    bottom: 9px;
+    left: 3px;
+}
+
+.heetae_info_modal_btn{
+    width: 48.8%;
+    background: #fc7093;
+    display: inline-block;
+    padding: 10px 0;
+    font-size: 13px;
+    color: #fefefe;
+    font-weight: 600;
+    height: 50px;
+    font-size: 16px;
+}
+
+
+.heetae_tab_review{
+	padding-top: 30px;
+}
+
+.heetae_tab_review div{
+	display: block;
+}
+
+.heetae_review_item{
+	position: relative;
+    border-bottom: 1px solid #e5e5e5;	
+    cursor: pointer;
+    height: 200px;
+}
+
+.heetae_review_item:hover{
+	background-color: #f4f4f4;
+}
+
+
+.heetae_review_message{
+	min-height: 22px;
+    margin-top: 30px;
+    padding: 18px 20px 14px;
+    background-color: #f1fcfc;
+    border: 1px solid #e3eded;
+    font-size: 13px;
+    color: #666666;
+}
+
+.heetae_review_message i{
+	color: #fff;
+    display: inline-block;
+    font-size: 12px;
+    padding: 3px 5px 2px;
+    margin-right: 5px;
+    background-color: #18d0c5;
+    font-style: normal;
+    display: inline-block;
+    height: 100%;
+}
+
+.heetae_review_message p{
+	vertical-align: middle;
+    margin-bottom: 5px;
+	display: inline-block;
+}
+
+.heetae_review_info{
+	display: block;
+    padding: 30px 10px;
+    min-height: 140px;
+}
+
+.heetae_review_more{
+	width: 100%;
+    height: 50px;
+    margin-top: 10px;
+    color: #333;
+    border: 1px #e5e5e5 solid;
+}
+
+.heetae_review_info_imgform{
+	display: block;
+    padding: 30px 10px;
+    padding-left: 240px;
+    min-height: 140px;
+}
+
+.heetae_review_item img{
+	position: absolute;
+    left: 10px;
+    top: 30px;
+    width: 210px;
+    height: 140px;
+    overflow: hidden;
+    width: 210px;
+    height: 140px;
+}
+
+.heetae_review_info_title{
+	margin-bottom: 20px;
+	display: block;
+}
+
+.heetae_review_info_title strong{
+	color: #333;
+	display: inline-block;
+    margin-right: 100px;
+    vertical-align: top;
+}
+
+.heetae_review_info_title_tag{
+	display: inline-block;
+    vertical-align: top;
+}
+
+.heetae_review_info_title_tag i{
+	color: #fff;
+    display: inline-block;
+    font-size: 12px;
+    padding: 1px 4px 2px;
+    margin-right: 5px;
+    background-color: #ff2d60;
+    font-style: normal;
+}
+
+.heetae_review_info_title_tag em{
+}
+
+.review_info_content{
+    font-size: 14px;
+    color: #666666;	
+}
+
+.heetae_review_info_user{
+    margin-top: 20px;
+    font-size: 13px;
+    color: #888;	
+    display: block;
+}
+
+.heetae_review_info_user span{
+	display: inline-block;
+    vertical-align: middle;
+    font-size: 13px;
+    color: #888;
+}
+
+.heetae_review_info_user i{
+    margin: 0 10px;
+    width: 1px;
+    height: 13px;
+    background-color: #ddd;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.review_info_score{
+	position: absolute;
+    top: 28px;
+    right: 10px;
+}
+
+.heetae_cupon_list{
+	width: 100%;
+	display: block;
+	margin-top: 50px;
+}
+
+.heetae_cupon_title em{
+   font-size: 16px;
+   color: #333;
+   font-weight: 600;
+   display: inline-block;
+}
+
+.heetae_cupon_title i{
+	position: relative;
+	width: 25px;
+    height: 25px;
+    display: inline-block;
+    overflow: hidden;
+    font-size: 0;
+    line-height: 0;
+    text-indent: -9999px;
+    vertical-align: middle;
+    background: url(https://yaimg.yanolja.com/joy/pw/common/icon-comm.svg) -25px 0;
+}
+
+.heetae_cupon_content{
+	background-color: #fafafa;
+    padding: 0 20px;
+    margin-top: 15px;
+    display: block;
+}
+
+.heetae_cupon_content_item{
+	margin-top: 0;
+    border-top: 0 none;
+    position: relative;
+    padding: 20px 0;
+    list-style: none;
+    outline: none;
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+
+.heetae_cupon_content_item_info{
+	border-right: 1px dashed #ddd;
+    margin-right: 90px;
+    list-style: none;
+}
+
+.heetae_cupon_item_title{
+	font-size: 19px;
+    color: #333;
+    font-weight: 600;
+    list-style: none;
+    text-align: -webkit-match-parent;
+}
+
+.heetae_cupon_item_title em{
+	color: #ff2d60;
+	font-size: 19px;
+	font-weight: 600;
+	letter-spacing: -.5px;
+	display: inline;
+}
+
+.heetae_cupon_item_title p{
+	display: inline;
+}
+
+.heetae_cupon_item_name{
+	font-size: 15px;
+    color: #333;
+    margin-top: 20px;
+    font-weight: 600;
+    display: block;
+    letter-spacing: -.5px;
+}
+
+.heetae_cupon_item_subtitle{
+	font-size: 14px;
+    color: #888;
+    margin-top: 10px;
+    padding-right: 10px;
+    display: block;
+    letter-spacing: -.5px;
+    list-style: none;
+}
+
+.heetae_cupon_item_button{
+	pointer-events: none;
+	position: absolute;
+    top: 0;
+    right: -20px;
+    padding: 0 15px;
+    width: 100px;
+    height: 100%;
+    text-align: center;
+    cursor: default;
+    outline: none;
+    border: 0 none;
+    background-color: transparent;
+}
+
+.heetae_cupon_item_button i{
+	width: 25px;
+    height: 25px;
+    display: inline-block;
+    overflow: hidden;
+    font-size: 0;
+    line-height: 0;
+    text-indent: -9999px;
+    vertical-align: middle;
+    background: url(https://yaimg.yanolja.com/joy/pw/common/icon-comm.svg) -25px -100px;
+    font-style: normal;
+}
+
+.heetae_cupon_item_button span{
+	color: #888;
+	font-size: 14px;
+    margin-top: 8px;
+    display: block;
+    font-weight: 600;
+    text-align: center;
+    cursor: default;
+    text-decoration: none;
+}
+
+.heetae_room_image1{
+	background-image: url(//yaimg.yanolja.com/resize/place/v4/2017/08/18/17/640/5996a4a50b97e0.42514041.jpg);
+    background-size: cover;
+    background-position: center center;
+}
+
+.heetae_room_image2{
+	background-image: url("//yaimg.yanolja.com/resize/place/v4/2017/08/18/17/640/5996a4a5547721.64570908.jpg");
+    background-size: cover;
+    background-position: center center;
+}
+
+.heetae_room_image3{
+	background-image: url("//yaimg.yanolja.com/resize/place/v4/2017/08/18/17/640/5996a4a5957530.55534901.jpg");
+    background-size: cover;
+    background-position: center center;
+}
+
+
+.heetae_footer{
+	width: 100%;
+	height: 300px;
+	text-align:center;
+}

@@ -1,0 +1,288 @@
+@charset "UTF-8";
+#page-wrapper{
+    padding-left: 30px;
+    margin-top: 5px;
+    width: 100%;
+    position: absolute;
+    border-bottom: 1px solid #e5e5e5;
+}
+/* 숙소정보 css */
+.accom_wrapper{
+    display: grid;
+    width: 90%;
+}
+.accom_box{
+    display:grid;
+    grid-template-columns: 1fr;
+    margin-left: 73px;
+    margin-top: 15px;
+}
+#price_reservation{
+	margin-top: 20px;
+}
+#accom_reservation{
+    grid-column-start: 1;
+}
+#local_sel{
+    display: inline;
+    width:100px;
+}
+#date{
+    display: inline;
+    width:150px;
+}
+#accom_button{
+    widthd:50px;
+}
+#location{
+    margin-top: 20px;
+    position: relative;
+    width: 1100px;
+    height: 430px;
+    margin: auto;
+}
+#local_box{
+    margin-left: 136px;
+    margin-top: 10px;
+}
+#accom_reservation{
+    height: 200%;
+}
+/* 지도 api css */
+.customoverlay {
+    position:relative;
+    border-radius:6px;
+    border: 1px solid #ccc;
+    border-bottom:2px solid #ddd;
+    float:left;
+    }
+.customoverlay:nth-of-type(n) {
+    border:0; 
+    box-shadow:0px 1px 2px #888;
+    }
+.customoverlay a {
+    display:block;
+    text-decoration:none;
+    color:#000;
+    text-align:center;
+    border-radius:6px;
+    font-size:14px;
+    font-weight:bold;
+    overflow:hidden;
+    background: #d95050;
+    background: #d95050 url(http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
+    }
+.customoverlay .title {
+    display:block;
+    text-align:center;
+    background:#fff;
+    margin-right:35px;
+    padding:10px 15px;
+    font-size:14px;
+    font-weight:bold;
+    }
+.customoverlay:after {
+    content:'';
+    position:absolute;
+    margin-left:-12px;
+    left:50%;
+    bottom:-12px;
+    width:22px;
+    height:12px;
+    background:url('http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')
+    }
+
+/* 매출정보 css */
+.sales_graph{
+    margin: auto;
+}
+.sales_th{
+    text-align: center;
+    width: 5%;
+}
+.sales_table{
+    position: relative;
+    top: 50px;
+}
+#sales_div{
+    height: 600px;
+}
+/* 고객정보 css */
+.custo_wrapper{
+    width: 100%;
+    height: 100%;
+}
+.custo_box_1 {
+    margin-left: 139px;
+    margin-top: 27px;
+}
+.custo_box_2 {
+    display: inline-block;
+    width: 100%;
+    height: 80%;
+    cursor: pointer;
+}
+#reser_type{
+    display: inline;
+    width: 200px;
+}
+#quarter_sel{
+    display: inline;
+    width: 200px;
+}
+#custo_button{
+    display: inline;
+    width: 200px;
+}
+.custo_box_2{
+    display: inline-block;
+    width: 100%;
+    height: 80%;
+}
+#accom_chart{
+    display: inline-block;
+    width: 50%;
+    height: 600px;
+    position: relative;
+    bottom: 200px;
+    left: 100px;
+    
+}
+
+#accom_chart svg {
+    width: 2000px;
+    height: 2000px;
+    position: absolute;
+    /* left: 100px; */
+    right: -500px;
+    bottom: -300px;
+    z-index: -1;
+}
+
+#pop_chart{
+    display: inline-block;
+    width: 50%;
+    height: 600px;
+    
+}
+
+/* basic css */
+.basic_wrapper{
+    display: grid;
+    width: 97%;
+}
+.basic_box_1{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* grid-column-gap: 10px; */
+    margin-left: 4%;
+    padding-bottom: 5%;
+    border: 1px solid #e5e5e5;
+    cursor: pointer;
+}
+
+#age_member{
+    grid-column-start:1;
+    grid-column-end:3;
+}
+/* top 숙소 */
+.padding_top_30{
+    padding-top: 20px;
+    margin-bottom: 0px;
+}
+.font_weight800{
+    font-weight: 800;
+}
+.font_1{
+    font-size: 20px;
+}
+p{
+    margin-top: 0;
+}
+#have_accom_div {
+    margin-left: -200px;
+    border: 1px solid #e5e5e5;
+}
+#top_local_div{
+    margin-right: 9%;
+    margin-left: 65px;
+    margin-top: 20px;
+}
+#top_sales_div{
+    margin-right: 9%;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+#top_member_div{
+    margin-right: 9%;
+    margin-left: 10px;
+    margin-top: 20px;
+}
+.table_title {
+    font-size: 13px;
+    text-align: center;
+    font-weight: bold;
+    padding-top: 40px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.accom_list {
+    float: left;
+    width: 60%;
+    margin-left: -150px;
+}
+/*top 숙소*/
+#top_type{
+	display: inline;
+	width: 200px;
+}
+#top_gender{
+	display: inline;
+	width: 200px;
+}
+#top_local{
+	display: inline;
+	width: 200px;
+}
+.top10title {
+    text-align: center;
+    font-size: 35px;
+    position: fixed;
+    background: white;
+    z-index: 2;
+    width: 100%;
+    margin-top: -5px;
+    padding-bottom: 5px;
+}
+
+.premium_selecter_sh_li{
+	list-style: none;
+    padding-bottom: 20px;
+    padding-top: 20px;
+    border-bottom: 1px solid #e5e5e5;
+    border-top: 1px solid #e5e5e5;
+    margin-left: 310px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+#member_gender_div{
+	border: 1px solid #e5e5e5;
+}
+
+#pay_type_div{
+	border: 1px solid #e5e5e5;
+} 
+#booked_div{
+	border: 1px solid #e5e5e5;
+}
+
+#accom_map {
+    margin-top: 20px;
+    position: fixed;
+    margin-left: 50%;
+    width: 700px;
+    height: 553px;
+    margin-top: 75px;
+    margin-left: -500;
+}

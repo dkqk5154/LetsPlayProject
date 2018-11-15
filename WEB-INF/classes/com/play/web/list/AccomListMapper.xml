@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.play.web.accom.AccomListMapper">
+
+<resultMap id="TaehyeongResult" type="hashmap">
+	<result property="accom_type" column="ACCOM_TYPE"/>
+	<result property="accom_addr" column="ACCOM_ADDR"/>
+</resultMap>
+
+  <select id="list" resultMap="TaehyeongResult">
+  SELECT a.ACCOM_SEQ, a.ACCOM_PHOTO1,a.ACCOM_ADDR, Min(b.ROOM_PRICE) AS PRICE, a.ACCOM_INTRODUCTION, a.LONGITUDE, a.LATITUDE, a.ACCOM_INTRODUCE, a.ACCOM_NAME
+  FROM accommodation a
+  join room b
+  on a.ACCOM_SEQ like b.ACCOM_SEQ
+  WHERE a.ACCOM_ADDR LIKE CONCAT('%',#{accom_addr},'%')
+  AND a.ACCOM_TYPE LIKE #{accom_type}
+  GROUP BY a.ACCOM_SEQ
+  ;
+  </select>
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.play.web.accom.AccomMapper">
+	<resultMap type="hashmap" id="HeeTaeBean">
+		<result property="accom_seq" column="accom_seq"/>
+		<result property="accom_name" column="accom_name"/>
+		<result property="accom_addr" column="accom_addr"/>
+		<result property="accom_phone" column="accom_phone"/>
+		<result property="accom_business_no" column="accom_business_no"/>
+		<result property="accom_type" column="accom_type"/>
+		<result property="accom_date" column="accom_date"/>
+		<result property="longitude" column="longitude"/>
+		<result property="latitude" column="latitude"/>
+		<result property="room_seq" column="room_seq"/>
+		<result property="room_name" column="room_name"/>
+		<result property="room_no" column="room_no"/>
+		<result property="room_price" column="room_price"/>
+		<result property="room_image1" column="room_image1"/>
+		<result property="room_image2" column="room_image2"/>
+		<result property="room_image3" column="room_image3"/>
+		<result property="msg_seq" column="msg_seq"/>
+		<result property="msg_title" column="msg_title"/>
+		<result property="msg_content" column="msg_content"/>
+		<result property="msg_photo" column="msg_photo"/>
+		<result property="msg_date" column="msg_date"/>
+		<result property="board_id" column="board_id"/>
+		<result property="member_id" column="member_id"/>
+		<result property="name" column="name"/>
+		<result property="accom_reco" column="accom_reco"/>
+		<result property="pay_no" column="pay_no"/>
+		<result property="pay_type" column="pay_type"/>
+		<result property="res_no" column="res_no"/>
+		<result property="checkin_date" column="checkin_date"/>
+		<result property="checkout_date" column="checkout_date"/>
+		<result property="checkdate" column="check_in_out"/>
+	</resultMap>
+	<select id="retrieveReservation" resultMap="HeeTaeBean">
+		select room.room_seq, B.checkdate
+		from(
+		SELECT A.room_seq, CASE WHEN A.cnt = 0 THEN 'true'
+		   				   		WHEN A.cnt is null THEN 'true'
+						        ELSE 'false'
+						        END
+						        AS 'checkdate'
+	         FROM(
+	               SELECT reservation.ROOM_SEQ AS room_seq, count(*) AS cnt
+	               FROM reservation
+	                WHERE DATE(reservation.CHECKIN_DATE) 
+	                BETWEEN #{checkin_date} AND #{checkout_date}
+	                AND reservation.ROOM_SEQ in (
+	                    SELECT room.ROOM_SEQ
+	                    FROM room
+	                )
+	                GROUP BY reservation.room_seq
+	                )A
+		 )B
+		RIGHT OUTER JOIN room
+		ON B.ROOM_SEQ = room.ROOM_SEQ
+		JOIN accommodation
+		ON accommodation.ACCOM_SEQ = room.ACCOM_SEQ
+		WHERE accommodation.ACCOM_SEQ = #{accom_seq}
+		GROUP BY room.room_seq
+	</select>
+	<select id="retrieveReservationRoom" resultMap="HeeTaeBean">
+		select room.room_seq, B.checkdate
+		from(
+		SELECT A.room_seq, CASE WHEN A.cnt = 0 THEN 'true'
+		   				   		WHEN A.cnt is null THEN 'true'
+						        ELSE 'false'
+						        END
+						        AS 'checkdate'
+	         FROM(
+	               SELECT reservation.ROOM_SEQ AS room_seq, count(*) AS cnt
+	               FROM reservation
+	                WHERE DATE(reservation.CHECKIN_DATE) 
+	                BETWEEN #{checkin_date} AND #{checkout_date}
+	                AND reservation.ROOM_SEQ in (
+	                    SELECT room.ROOM_SEQ
+	                    FROM room
+	                )
+	                GROUP BY reservation.room_seq
+	                )A
+		 )B
+		RIGHT OUTER JOIN room
+		ON B.ROOM_SEQ = room.ROOM_SEQ
+		JOIN accommodation
+		ON accommodation.ACCOM_SEQ = room.ACCOM_SEQ
+		WHERE room.ROOM_SEQ = #{room_seq}
+		GROUP BY room.room_seq
+	</select>
+	<select id="retrieveAccommodation" resultMap="HeeTaeBean">
+		SELECT * FROM accommodation
+		WHERE ACCOM_SEQ = #{accom_seq}
+	</select>
+	<select id="retrieveReviewRoomSeq" resultMap="HeeTaeBean">
+		SELECT room.ROOM_SEQ, room.ROOM_NAME FROM room
+		WHERE room.ROOM_SEQ IN(
+		SELECT DISTINCT reservation.ROOM_SEQ
+			FROM reservation
+			WHERE reservation.ROOM_SEQ IN(
+			 SELECT room.ROOM_SEQ FROM room
+			 WHERE room.ACCOM_SEQ = #{accom_seq}
+			)
+			AND reservation.MEMBER_ID = #{member_id}
+			AND reservation.RES_CHECK = '1'
+		)
+	</select>
+	<select id="listRoom" resultMap="HeeTaeBean">
+		SELECT * FROM room
+		WHERE ACCOM_SEQ = #{accom_seq}
+	</select>
+	<select id="listReview" resultMap="HeeTaeBean">
+		select A.*
+		from(
+		SELECT rank() over(order by msg_date desc) as review_count,msg_title, msg_content, msg_photo, msg_date,member_id,name,
+		room_seq, room_name, room_grade, accom_reco 
+		FROM acom_review
+			WHERE ACCOM_SEQ = #{accom_seq}
+			)A
+		where A.review_count between ${review_count_down} and ${review_count_up}
+			order by A.review_count 
+	</select>
+	<select id="insertReview" resultMap="HeeTaeBean">
+		INSERT INTO board(
+		MSG_TITLE, MSG_CONTENT, MSG_PHOTO,
+		BOARD_ID,MEMBER_ID,ROOM_SEQ, ROOM_GRADE, ACCOM_RECO)
+		VALUES( #{msg_title},#{msg_content},#{msg_photo}
+		,#{board_id},#{member_id},#{room_seq}
+		,#{room_grade},#{accom_reco} )
+	</select>
+	<select id="insertReservation" resultMap="HeeTaeBean">
+		INSERT INTO reservation
+		(MEMBER_ID,PAY_TYPE,PAY_PRICE,ROOM_SEQ,CHECKIN_DATE,CHECKOUT_DATE) 
+		VALUES
+		(#{member_id},#{pay_type},#{pay_price},#{room_seq},#{checkin_date},#{checkout_date});
+	</select>
+	 <select id="list" resultType="hashmap">
+	  SELECT a.ACCOM_ADDR,a.ACCOM_SEQ, a.ACCOM_PHOTO1,a.ACCOM_ADDR, Min(b.ROOM_PRICE) AS PRICE, a.ACCOM_INTRODUCTION, a.LONGITUDE, a.LATITUDE, a.ACCOM_INTRODUCE, a.ACCOM_NAME
+	  FROM accommodation a
+	  join room b
+	  on a.ACCOM_SEQ like b.ACCOM_SEQ
+	  WHERE a.ACCOM_ADDR LIKE CONCAT('%',#{accom_addr},'%')
+	  AND a.ACCOM_TYPE LIKE #{accom_type}
+	  GROUP BY a.ACCOM_SEQ
+	  </select>
+  
+	  <select id="lowList" resultType="hashmap">
+		  SELECT a.ACCOM_ADDR,a.ACCOM_SEQ, a.ACCOM_PHOTO1,a.ACCOM_ADDR, Min(b.ROOM_PRICE) AS PRICE, a.ACCOM_INTRODUCTION, a.LONGITUDE, a.LATITUDE, a.ACCOM_INTRODUCE, a.ACCOM_NAME
+		  FROM accommodation a
+		  join room b
+		  on a.ACCOM_SEQ like b.ACCOM_SEQ
+		  WHERE a.ACCOM_ADDR LIKE CONCAT('%',#{accom_addr},'%')
+		  AND a.ACCOM_TYPE LIKE #{accom_type}
+		  GROUP BY a.ACCOM_SEQ
+		  ORDER BY PRICE
+	  </select>
+	  <update id="updateReviewImage" parameterType="com.play.web.mbr.Member">
+		  UPDATE board SET
+	    		board.MSG_PHOTO = #{msg_photo}
+		  WHERE board.MEMBER_ID = #{member_id}
+		  and board.MSG_SEQ = #{msg_seq}
+		  and board.BOARD_ID = 'review' 
+  	  </update>
+</mapper>

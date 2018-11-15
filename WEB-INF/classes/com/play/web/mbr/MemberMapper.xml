@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.play.web.mbr.MemberMapper">
+
+<resultMap id="hjResult" type="hashmap">
+	<result property="member_id" column="MEMBER_ID"/>
+	<result property="res_no" column="RES_NO"/>
+	<result property="accom_name" column="ACCOM_NAME"/>
+	<result property="room_no" column="ROOM_NO"/>
+	<result property="accom_addr" column="ACCOM_ADDR"/>
+	<result property="pay_date" column="PAY_DATE"/>
+	<result property="checkin_date" column="CHECKIN_DATE"/>
+	<result property="checkout_date" column="CHECKOUT_DATE"/>
+	<result property="pay_price" column="PAY_PRICE"/>
+	<result property="pay_type" column="PAY_TYPE"/>
+	<result property="pay_no" column="PAY_NO"/>
+	<result property="accom_seq" column="ACCOM_SEQ"/>
+	<result property="res_check" column="RES_CHECK"/>
+	<result property="longitude" column="LONGITUDE"/>
+	<result property="latitude" column="LATITUDE"/>
+</resultMap>
+
+ <select id="rlist" resultMap="hjResult">
+	 SELECT
+	       A.ACCOM_NAME,
+	       O.ROOM_NO,
+	       A.ACCOM_ADDR,
+	       R.PAY_DATE,
+	       CONCAT(R.CHECKIN_DATE, ",", DAYNAME(R.CHECKIN_DATE))
+	          AS CHECKIN_DATE,
+	       CONCAT(R.CHECKOUT_DATE, ",", DAYNAME(R.CHECKOUT_DATE))
+	          AS CHECKOUT_DATE,
+	       R.PAY_PRICE,
+	       R.PAY_TYPE,
+	       A.ACCOM_SEQ,
+	       R.PAY_NO,
+	       R.RES_CHECK,
+	       A.LONGITUDE,
+	       A.LATITUDE
+	FROM reservation R
+	     JOIN room O ON O.ROOM_SEQ = R.ROOM_SEQ
+		     JOIN accommodation A ON A.ACCOM_SEQ = O.ACCOM_SEQ
+	WHERE MEMBER_ID LIKE #{member_id}
+	ORDER BY R.PAY_DATE DESC
+ </select>
+ 
+  <select id="get" resultType="com.play.web.mbr.Member">
+    SELECT *
+    FROM member
+    <where>
+    	<if test=" member_id != null and member_id != '' ">
+    		MEMBER_ID LIKE #{member_id}
+    	</if>
+    	<if test=" password != null and password != '' ">
+    		AND PASSWORD LIKE #{password}
+    	</if>
+    </where>
+  </select>
+  
+  <insert id="post" >
+  	INSERT INTO member
+		(MEMBER_ID, NAME, PASSWORD, BIRTHDATE, GENDER, AGE, PHONE, NICKNAME, ADDRESS, PROFILEIMG, KAKAO)
+		VALUES (#{member_id}, #{name}, #{password}, #{birthdate}, #{gender}, #{age}, #{phone}, #{nickname}, #{address}, #{profileimg}, #{kakao})
+  </insert>
+  <select id="list" resultType="com.play.web.mbr.Member">
+    SELECT * 
+    FROM member
+  </select>
+  <select id="count" resultType="int">
+  	SELECT COUNT(*) FROM member
+  	<where>
+	  	<if test=" member_id != null and member_id != '' ">
+	  		MEMBER_ID LIKE #{member_id}
+	  	</if>
+  	</where>
+  </select>
+  
+  <update id="update" parameterType="com.play.web.mbr.Member">
+	  UPDATE member SET
+	  	<if test=" nickname != null and nickname != '' ">
+    		NICKNAME = #{nickname}
+    	</if>
+	  	<if test=" password != null and password != '' ">
+    		PASSWORD = #{password}
+    	</if>
+	  	<if test=" phone != null and phone != '' ">
+    		PHONE = #{phone}
+    	</if>
+	  	<if test=" profileimg != null and profileimg != '' ">
+    		PROFILEIMG = #{profileimg}
+    	</if>
+	  	<if test=" comment != null and comment != '' ">
+    		COMMENT = #{comment}
+    	</if>
+	  WHERE MEMBER_ID LIKE #{member_id}
+  </update>
+  
+  <delete id="delete" parameterType="com.play.web.mbr.Member">
+	  DELETE FROM member
+	  WHERE MEMBER_ID = #{member_id}
+	  AND PASSWORD = #{password}
+  </delete>
+  
+  <update id="cancel">
+  	  UPDATE reservation R
+	  SET  R.RES_CHECK = '2'
+	  WHERE R.MEMBER_ID = #{member_id}
+	  AND R.PAY_NO = #{pay_no};
+  </update>
+  
+</mapper>

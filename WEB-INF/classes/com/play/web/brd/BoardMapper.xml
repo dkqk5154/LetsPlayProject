@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.play.web.brd.BoardMapper">
+<resultMap id="seinResult" type="hashmap">
+	<result property="msg_seq" column="MSG_SEQ"/>
+	<result property="msg_title" column="MSG_TITLE"/>
+	<result property="msg_photo" column="MSG_PHOTO"/>
+	<result property="msg_photo1" column="MSG_PHOTO1"/>
+	<result property="msg_date" column="MSG_DATE"/>
+	<result property="msg_count" column="MSG_COUNT"/>
+	<result property="msg_content" column="MSG_CONTENT"/>
+	<result property="bookmark_count" column="BOOKMARK_COUNT"/>
+	<result property="subscription_count" column="SUBSCRIPTION_COUNT"/>
+	<result property="board_depth" column="BOARD_DEPTH"/>
+	<result property="board_id" column="BOARD_ID"/>
+	<result property="member_id" column="MEMBER_ID"/>
+	<result property="pay_no" column="PAY_NO"/>
+	<result property="tag" column="TAG"/>
+	<result property="msg_addr" column="MSG_ADDR"/>
+	<result property="like_count" column="LIKE_COUNT"/>
+	<result property="reply_count" column="REPLY_COUNT"/>
+	<result property="accom_grade" column="ACCOM_GRADE"/>
+	<result property="accom_reco" column="ACCOM_RECO"/>
+	<result property="reply_seq" column="REPLY_SEQ"/>
+	<result property="msg_ref" column="MSG_REF"/>
+	<result property="nickname" column="NICKNAME"/>
+	<result property="password" column="NICKpasswordNAME"/>
+	<result property="birthdate" column="BIRTHDATE"/>
+	<result property="joindate" column="JOINDATE"/>
+	<result property="gender" column="GENDER"/>
+	<result property="age" column="AGE"/>
+	<result property="phone" column="PHONE"/>
+	<result property="customer_grade" column="CUSTOMER_GRADE"/>
+	<result property="point" column="POINT"/>
+	<result property="address" column="ADDRESS"/>
+	<result property="zipcode" column="ZIPCODE"/>
+	<result property="profileimg" column="PROFILEIMG"/>
+	<result property="saved_seq" column="SAVED_SEQ"/>
+	<result property="comment" column="COMMENT"/>
+	<result property="accom_id" column="ACCOM_ID"/>
+	<result property="like_check" column="LIKE_CHECK"/>
+	<result property="bookmark_check" column="BOOKMARK_CHECK"/>
+	<result property="saved_uinque" column="SAVED_UINQUE"/>
+	<result property="sub_mem_id" column="SUB_MEM_ID"/>
+	<result property="count" column="COUNT"/>
+	
+	<result property="accom_seq" column="ACCOM_SEQ"/>
+	<result property="accom_name" column="ACCOM_NAME"/>
+	<result property="accom_addr" column="ACCOM_ADDR"/>
+	<result property="accom_phone" column="ACCOM_PHONE"/>
+	<result property="accom_business_no" column="ACCOM_BUSINESS_NO"/>
+	<result property="accom_type" column="ACCOM_TYPE"/>
+	<result property="accom_date" column="ACCOM_DATE"/>
+	<result property="accom_grade" column="ACCOM_GRADE"/>
+	<result property="longitude" column="LONGITUDE"/>
+	<result property="latitude" column="LATITUDE"/>
+</resultMap>
+
+  <insert id="write">
+   INSERT INTO board (MSG_TITLE, MSG_CONTENT, BOARD_ID, MEMBER_ID, TAG, MSG_PHOTO, MSG_PHOTO1, MSG_ADDR)
+   VALUES (#{msg_title}, #{msg_content}, #{board_id}, #{member_id}, #{tag}, #{msg_photo}, #{msg_photo1}, #{msg_addr}) 
+  </insert>
+  
+  <select id="list" resultMap="seinResult">
+	SELECT *
+       FROM (
+           SELECT
+               ROW_NUMBER() OVER(ORDER BY msg_seq DESC) AS NUM,
+               a.*, m.NICKNAME, m.PROFILEIMG, m.COMMENT
+           FROM board a
+           	JOIN member m
+           	ON a.MEMBER_ID = m.MEMBER_ID
+           WHERE a.board_depth like 0
+           AND a.board_id like #{board_id}
+           <if test="member_id != null">
+           		AND a.MEMBER_ID like #{member_id}
+           </if>
+       )B
+       WHERE B.NUM BETWEEN #{beginRow} AND #{endRow}
+       ORDER BY B.NUM
+  </select>
+  
+  <select id="read" resultMap="seinResult">
+  	SELECT a.*, m.NICKNAME, m.PROFILEIMG, m.COMMENT
+  	FROM board a
+	  	JOIN member m
+	    ON a.MEMBER_ID = m.MEMBER_ID
+  	WHERE a.MSG_SEQ like #{msg_seq}
+  </select>
+  
+  <update id="modify">
+  	UPDATE board SET MSG_TITLE=#{msg_title}, MSG_CONTENT=#{msg_content}, TAG=#{tag}, MSG_ADDR=#{msg_addr}
+  	<if test="msg_photo != null">
+  	,MSG_PHOTO=#{msg_photo}
+  	</if>
+  	<if test="msg_photo1 != null">
+  	,MSG_PHOTO1=#{msg_photo1}
+  	</if>
+  	WHERE BOARD_ID LIKE #{board_id}
+  	AND MSG_SEQ LIKE #{msg_seq}
+  </update> 
+  
+  <delete id="delete">
+  	DELETE FROM board
+  	WHERE BOARD_ID LIKE #{board_id}
+  	AND MSG_SEQ LIKE #{msg_seq}
+  </delete>
+  
+  <insert id="reWrite">
+  	INSERT INTO board (MSG_CONTENT,BOARD_DEPTH, MSG_REF, BOARD_ID, MEMBER_ID, REPLY_SEQ)
+  	VALUES (#{msg_content},#{board_depth}, #{msg_seq}, #{board_id}, #{member_id}, 
+  		nvl((SELECT MAX(REPLY_SEQ)+1
+  		FROM board b
+ 		WHERE BOARD_ID LIKE #{board_id}
+  		AND BOARD_DEPTH LIKE #{board_depth}
+  		AND MSG_REF LIKE #{msg_seq}
+  		),1)
+  	)
+  </insert>
+  
+  <select id="reply" resultMap="seinResult">
+	SELECT *
+       FROM (
+           SELECT
+               ROW_NUMBER() OVER(ORDER BY msg_seq DESC) AS NUM,
+               A.*, M.NICKNAME, M.PROFILEIMG, M.COMMENT
+           FROM
+               board A
+               JOIN member M
+               ON A.member_id like M.member_id
+           WHERE msg_ref like #{msg_ref}
+           AND board_id like #{board_id}
+           AND board_depth like #{board_depth}
+       )B
+  </select>
+  
+  <update id="reModify">
+  	UPDATE board SET MSG_CONTENT=#{msg_content}
+  	WHERE BOARD_ID LIKE #{board_id}
+  	AND MSG_SEQ LIKE #{msg_seq}
+  </update>
+  
+  <delete id="reDelete">
+  	DELETE FROM board 
+  	WHERE BOARD_ID LIKE #{board_id}
+  	AND MSG_SEQ LIKE #{msg_seq}
+  </delete>
+    
+  <select id="count" resultType="int">
+  	SELECT COUNT(*) FROM board
+  	WHERE board_depth like 0
+  	AND board_id like 'cast'
+  	<if test=" member_id != null and member_id != ''">
+  	AND member_id like #{member_id};
+  	</if>
+  </select>
+  
+  <update id="readInc">
+  	UPDATE board SET MSG_COUNT=MSG_COUNT+1
+  	WHERE MSG_SEQ LIKE #{msg_seq}
+  </update>
+  
+  <update id="likeInc">
+  	UPDATE board SET LIKE_COUNT=LIKE_COUNT+1
+  	WHERE MSG_SEQ LIKE #{msg_seq}
+  </update>
+  
+  <update id="likeDes">
+  	UPDATE board SET LIKE_COUNT=LIKE_COUNT-1
+  	WHERE MSG_SEQ LIKE #{msg_seq}
+  </update>
+  
+  <insert id="subInc">
+  	INSERT INTO saved_accom (MEMBER_ID, SUB_MEM_ID, SAVED_UNIQUE)
+  	VALUES (#{member_id}, #{sub_mem_id}, #{saved_unique})
+  </insert>
+  
+  <delete id="subDes">
+  	DELETE FROM saved_accom
+  	WHERE MEMBER_ID LIKE #{member_id}
+  	AND SUB_MEM_ID LIKE #{sub_mem_id}
+  </delete>
+  
+  <insert id="saveLike">
+  	INSERT INTO saved_accom (SAVED_UNIQUE, MEMBER_ID, MSG_SEQ, LIKE_CHECK)
+  	VALUES (#{saved_unique}, #{member_id}, #{msg_seq}, 1)
+  	ON DUPLICATE KEY UPDATE LIKE_CHECK=1
+  </insert>
+  
+  <insert id="deleteLike">
+  	UPDATE saved_accom SET LIKE_CHECK=0
+  	WHERE SAVED_UNIQUE LIKE #{saved_unique}
+  </insert>
+  
+  <insert id="saveBookmark">
+  	INSERT INTO saved_accom (SAVED_UNIQUE, MEMBER_ID, MSG_SEQ, BOOKMARK_CHECK)
+  	VALUES (#{saved_unique}, #{member_id}, #{msg_seq}, 1)
+  	ON DUPLICATE KEY UPDATE BOOKMARK_CHECK=1
+  </insert>
+  
+  <insert id="deleteBookmark">
+  	UPDATE saved_accom SET BOOKMARK_CHECK=0
+  	WHERE SAVED_UNIQUE LIKE #{saved_unique}
+  </insert>
+  
+  <select id="check" resultMap="seinResult">
+	SELECT *
+	FROM saved_accom
+	WHERE MSG_SEQ LIKE #{msg_seq}
+	AND MEMBER_ID LIKE #{member_id}
+  </select>
+  
+  <select id="subcheck" resultType="int">
+  	SELECT COUNT(*)
+  	FROM saved_accom
+  	WHERE SAVED_UNIQUE LIKE #{saved_unique}
+  </select>
+  
+  <select id="subcount" resultType="int">
+	SELECT COUNT(*)
+	FROM saved_accom
+	WHERE SUB_MEM_ID LIKE #{member_id};
+  </select>
+  
+  <select id="castcount" resultType="int">
+	SELECT COUNT(*)
+	FROM board
+	WHERE MEMBER_ID LIKE #{member_id}
+	AND BOARD_ID LIKE 'cast'
+	AND BOARD_DEPTH LIKE 0
+  </select>
+  
+  <select id="mysub" resultMap="seinResult">
+  	SELECT COUNT(*) AS COUNT, B.MEMBER_ID, M.NICKNAME, M.PROFILEIMG, M.COMMENT
+	FROM board B
+		JOIN member M
+		ON B.MEMBER_ID LIKE M.MEMBER_ID
+	WHERE B.MEMBER_ID IN (SELECT SUB_MEM_ID 
+							FROM saved_accom 
+							WHERE MEMBER_ID LIKE #{member_id} 
+							AND SUB_MEM_ID IS NOT NULL)
+	GROUP BY B.MEMBER_ID;
+  </select>
+  
+  <select id="myBookmark" resultMap="seinResult">
+  	SELECT *
+	FROM board B
+		JOIN member M
+		ON B.member_id LIKE M.member_id
+	WHERE B.MSG_SEQ IN (SELECT MSG_SEQ 
+						FROM saved_accom 
+						WHERE MEMBER_ID LIKE #{member_id} 
+						AND BOOKMARK_CHECK LIKE 1)
+  </select>
+  
+  <select id="rankLike" resultMap="seinResult">
+  	SELECT *
+	FROM (SELECT ROW_NUMBER() OVER(ORDER BY LIKE_COUNT DESC) AS NUM, board.*
+		FROM board
+		WHERE BOARD_ID LIKE 'CAST'
+		AND BOARD_DEPTH LIKE 0
+		ORDER BY NUM) A
+	WHERE NUM BETWEEN 1 AND 5;
+  </select>
+  
+  <select id="search" resultMap="seinResult">
+ 	SELECT *
+     FROM (
+         SELECT
+             ROW_NUMBER() OVER(ORDER BY msg_seq DESC) AS NUM,
+             a.*, m.NICKNAME, m.PROFILEIMG, m.COMMENT
+         FROM (SELECT *
+	 		 FROM board
+			 WHERE BOARD_ID LIKE 'CAST'
+			 AND BOARD_DEPTH LIKE 0) a
+     		JOIN member m
+	 			ON a.MEMBER_ID LIKE m.MEMBER_ID
+			WHERE a.MSG_TITLE LIKE #{search}
+		    OR a.MSG_CONTENT LIKE #{search}
+		    OR a.MSG_ADDR LIKE #{search}
+		    OR m.NICKNAME LIKE #{search}
+     ) b
+     WHERE b.NUM BETWEEN #{beginRow} AND #{endRow}
+     ORDER BY b.NUM;
+  </select>
+  <select id="searchCount" resultType="int">
+	SELECT COUNT(*)
+	 FROM (SELECT *
+	 		 FROM board
+			 WHERE BOARD_ID LIKE 'CAST'
+			 AND BOARD_DEPTH LIKE 0) b
+	 JOIN member m
+	 	ON b.MEMBER_ID LIKE m.MEMBER_ID
+	 WHERE b.MSG_TITLE LIKE #{search}
+	 OR b.MSG_CONTENT LIKE #{search}
+	 OR b.MSG_ADDR LIKE #{search}
+	 OR m.NICKNAME LIKE #{search}
+  </select>
+
+	<select id="nearAccom" resultMap="seinResult">
+	SELECT *
+	FROM accommodation
+	WHERE ACCOM_ADDR LIKE #{tag}
+	</select>
+	
+</mapper>
