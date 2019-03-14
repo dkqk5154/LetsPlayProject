@@ -10,7 +10,7 @@ Test_ID ()=>{
 
 
 # 개발환경
-위 사이트는 **AWS**서버를 사용했으며 **Single Page Aplication**방식으로 만들어졌습니다.
+위 사이트는 **Spring**을 사용하여 **AWS**에 업로드 하였습니다. 
 
 **프레임워크** : Spring5 ,Mybatis
 
