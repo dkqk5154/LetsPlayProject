@@ -1,18 +1,10 @@
 # http://heetaes.mooo.com/
 
-# 테스트 계정
-```js
-Test_ID ()=>{
-  TestID : test001,
-  TestPASS : test001
-}
-```
-
-
-# 개발환경
+#소개
 위 사이트는 "야놀자" 모방사이트 프로젝트 이며  
 **Spring**을 사용하여 **AWS**에 업로드 하였습니다. 
 
+# 개발환경
 **프레임워크** : Spring5 ,Mybatis
 
 **JS 라이브러리** : Bootstrap, JQuery
@@ -24,6 +16,14 @@ Test_ID ()=>{
 **Tool** : Spring Tool Suite, GitHub, SourceTree, PuTTY, FileZilla, maven
 
 **ETC** : GoogleChart API,KakaoDevelopers,Restful, FreeDomain
+
+# 테스트 계정
+```js
+Test_ID ()=>{
+  TestID : test001,
+  TestPASS : test001
+}
+```
 
 
 # 담당한 페이지
