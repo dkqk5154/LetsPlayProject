@@ -5,9 +5,9 @@
 **Spring**을 사용하여 **AWS**에 업로드 하였습니다. 
 
 # 개발환경
-**프레임워크** : Spring5(Java) ,Mybatis
+**FrameWork** : Spring5(Java) ,Mybatis
 
-**JS 라이브러리** : Bootstrap, JQuery
+**JS Library** : Bootstrap, JQuery
 
 **DB** : MariaDB
 
