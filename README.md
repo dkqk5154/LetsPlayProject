@@ -13,17 +13,9 @@
 
 **ETC** : GoogleChart API,KakaoDevelopers,Restful, FreeDomain
 
-# 테스트 계정
-```js
-Test_ID ()=>{
-  TestID : test001,
-  TestPASS : test001
-}
-```
-
 
 # 담당한 페이지
-## Detail
+## Detail (heeatae.js)
 사이트의 숙소검색을 클릭한뒤 아무 숙소를 선택하여 클릭 하면 나오는 상세페이지이며  
 숙소의 상세 내용과 예약가능, 위치 를 알수있는 페이지 입니다.   
 ```js
