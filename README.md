@@ -2,16 +2,17 @@
 "야놀자" 모방사이트 5인 팀프로젝트 이며  
 **Spring**을 사용하여 **AWS**에 업로드 하였습니다. 
 
-# 개발환경
-**FrameWork** : Spring5(Java) ,Mybatis
+# 활용기술
+**-Spring5(Java)**  
+**-Mybatis**  
+**-Bootstrap**  
+**-JQuery**  
+**-MariaDB**  
+**-SourceTree**  
+**-maven**  
+**-GoogleChart API**  
+**-KakaoDevelopers**  
 
-**JS Library** : Bootstrap, JQuery
-
-**DB** : MariaDB
-
-**Tool** : Spring Tool Suite, GitHub, SourceTree, PuTTY, FileZilla, maven
-
-**ETC** : GoogleChart API,KakaoDevelopers,Restful, FreeDomain
 
 
 # 담당한 페이지
