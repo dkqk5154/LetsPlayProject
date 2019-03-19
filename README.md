@@ -3,15 +3,15 @@
 **Spring**을 사용하여 **AWS**에 업로드 하였습니다. 
 
 # 활용기술
-**-Spring5(Java)**  
-**-Mybatis**  
-**-Bootstrap**  
-**-JQuery**  
-**-MariaDB**  
-**-SourceTree**  
-**-maven**  
-**-GoogleChart API**  
-**-KakaoDevelopers**  
+-Spring5(Java)  
+-Mybatis  
+-Bootstrap   
+-JQuery  
+-MariaDB  
+-SourceTree   
+-maven     
+-GoogleChart API  
+-KakaoDevelopers   
 
 
 
